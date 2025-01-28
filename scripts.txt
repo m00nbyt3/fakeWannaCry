@@ -1,0 +1,17 @@
+Start-Process "chrome.exe" -ArgumentList "--kiosk https://www.google.com"
+Stop-Process -Name "chrome" -Force;Start-Process "chrome.exe" -ArgumentList "--kiosk ./index.html"
+
+
+"Stop-Process -Name 'chrome' -Force;Start-Process 'chrome.exe' -ArgumentList '--kiosk https://moonbyte.es/winConfig64/'"
+
+
+C:\Windows\System32\taskkill.exe -F -IM explorer.exe;
+
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoExit -Command "Stop-Process -Name 'chrome' -Force;Start-Process 'taskkill.exe' -ArgumentList '-F -IM explorer.exe';Start-Process 'chrome.exe' -ArgumentList '--kiosk https://moonbyte.es/winConfig64/'"
+
+Start-Process 'taskkill.exe' -ArgumentList '-F -IM explorer.exe'
+
+
+DEFINITIVO:
+
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoExit -Command "Stop-Process -Name 'chrome' -Force;Start-Process 'taskkill.exe' -ArgumentList '-F -IM explorer.exe';Start-Process 'chrome.exe' -ArgumentList '--kiosk https://moonbyte.es/winConfig64/'"
