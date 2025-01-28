@@ -1,0 +1,27 @@
+1. Agregar script y html
+
+Stop-Process -Name 'chrome' -Force;
+Start-Process 'taskkill.exe' -ArgumentList '-F -IM explorer.exe';
+
+$fullPath = Resolve-Path .\index.html
+Start-Process 'chrome.exe' $fullPath;
+
+
+
+2.Crear acceso directo con lo siguiente:
+
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command ".\script.ps1"
+
+
+
+3.Ocultar script y html
+
+attrib +s +h script.ps1
+attrib +s +h index.html
+
+
+
+4.Para desocultarlos utilizar
+
+attrib -s -h script.ps1
+attrib -s -h index.html

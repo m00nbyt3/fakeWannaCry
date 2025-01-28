@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WannaCry Ransomware</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        body {
+            background: #b30000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 1rem;
+            background-image: 
+                linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 100%),
+                url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==");
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff;
+            color: #b30000;
+            padding: 1rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-list {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 2rem 0;
+        }
+
+        .file-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.2); /* Cambiado a fondo oscuro */
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress {
+            height: 100%;
+            background: #b30000; /* Cambiado a color rojo para mejor contraste */
+            width: 0;
+            transition: width 0.5s ease;
+        }
+
+        .bitcoin-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        .bitcoin-address {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+
+        .warning-text {
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .file-status {
+            display: inline-block;
+            min-width: 110px; /* Ancho mínimo para mantener la posición */
+            text-align: left;
+        }
+
+        .dots {
+            display: inline-block;
+            width: 30px; /* Espacio reservado para los puntos */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">WannaCry Ransomware 2.0</div>
+            <div class="timer" id="timer">00:00:00</div>
+        </div>
+
+        <div class="warning-box">
+            <center>
+                <h2>Ooops, your files have been encrypted!</h2>
+                <p style="margin: 1rem 0;">If you see this text, then your files are no longer accessible.</p>
+                <p>You must pay the ransom to recover them.</p>
+                <div class="warning-text">‼️ Any attempt to remove this software will result in immediate data loss ‼️</div>
+            </center>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+
+        <div class="file-list" id="fileList">
+            <!-- Dynamic files will be inserted here -->
+        </div>
+
+        <div class="bitcoin-section">
+            <h3>Payment Instructions:</h3>
+            <div class="warning-text">⚠️ The price will increase by $100 every minute</div>
+            <ol style="margin: 1rem 0; padding-left: 1.5rem;">
+                <li id="btc" style="margin-bottom: 0.5rem;">Send exactly 0.06 BTC to:</li>
+                <li class="bitcoin-address" id="btcAddress">1DwunA9tZZe9j7q1F3x7LH1N2gkKvRoC7X</li>
+                <li style="margin-top: 0.5rem;">Email transaction ID to: wannacry-support@protonmail.com</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Configuración original del repositorio
+        const files = [
+            "C:\\",
+        ];
+
+        let tottime = 60 * 10;
+        let timeLeft = tottime; // 24 horas
+        let encryptionProgress = 0;
+        const btcAddress = "1DwunA9tZZe9j7q1F3x7LH1N2gkKvRoC7X";
+        let dotCount = 0;
+        let dotInterval;
+
+        // Inicializar lista de archivos
+        const fileList = document.getElementById('fileList');
+        files.forEach(file => {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.innerHTML = `
+                <span >${file}</span>
+                <span class="file-status">Encrypting<span class="dots"></span>
+            `;
+            fileList.appendChild(div);
+        });
+
+        // Animación de puntos
+        function animateDots() {
+            const dots = ['.', '..', '...'];
+            document.querySelectorAll('.dots').forEach(el => {
+                el.textContent = dots[dotCount];
+            });
+            dotCount = (dotCount + 1) % 3;
+        }
+
+        // Cambiar a Encrypted después de 10 segundos
+        setTimeout(() => {
+            clearInterval(dotInterval);
+            document.querySelectorAll('.file-status').forEach(el => {
+                el.innerHTML = '<strong>Encrypted</strong>';
+            });
+        }, 13000);
+
+        // Actualizar temporizador y progreso
+        function updateDisplay() {
+            // Temporizador
+            const hours = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            //Load topay btc
+            let btc = ((0.050 * 1000) + ((Math.floor(tottime /60) - Math.floor(timeLeft / 60)))) / 1000;
+            document.getElementById('btc').innerHTML = "Send exactly " +  btc + " BTC to:"
+
+            // Barra de progreso
+            encryptionProgress = ((timeLeft * 100) / tottime);
+            document.getElementById('progress').style.width = `${encryptionProgress}%`;
+
+            timeLeft = Math.max(0, timeLeft - 1);
+        }
+
+        // Efecto de glitch en texto (igual al original)
+        function glitchText(original) {
+            return original.split('').map(char => {
+                return Math.random() < 0.3 
+                    ? `<span class="glitch">${String.fromCharCode(33 + Math.random() * 94)}</span>`
+                    : char;
+            }).join('');
+        }
+
+        // Iniciar actualizaciones
+        dotInterval = setInterval(animateDots, 500);
+        setInterval(updateDisplay, 1000);
+        updateDisplay(); // Ejecutar inmediatamente
+        animateDots(); // Iniciar animación de puntos
+    </script>
+</body>
+</html>
